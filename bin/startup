@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+/**
+ * @author Robin Duda
+ *
+ * Entry point/Startup/Bootfile.
+ */
+
+
+var webserver = require('./frontend/webserver');

@@ -1,0 +1,35 @@
+#messageframe {
+    height: 600px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding-bottom: 0;
+!important;
+    margin-bottom: 0;
+!important;
+}
+
+#messagebox {
+    display: block;
+    max-height: inherit;
+    max-width: inherit;
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: darkslategray;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-button {
+    background-color: teal;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: black;
+}

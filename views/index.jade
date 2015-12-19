@@ -1,0 +1,27 @@
+extends layout
+
+block content
+    div(ng-app='messageApp', ng-controller='messaging').container
+        .text-center
+            h1= '{{room.version}}'
+            p {{room.topic}}
+
+        .col-xs-12.col-lg-8.col-lg-offset-2
+            .well.well-sm
+                p {{room.name}}
+
+                .well.well-sm#messageframe
+                    #messagebox
+                        ul(style="list-style-type: none;")
+                            li(ng-repeat="message in room.messages track by $index")
+                                | {{message.sender}}
+                                span(ng-if="message.system").text-warning
+                                    | {{message.content}}
+                                span(ng-if="message.command").text-info
+                                    | {{message.content}}
+                                span(ng-if="!message.command && !message.system")
+                                    | :&nbsp;{{message.content}}
+                .well.well-lg
+                    form(ng-submit='submit()')
+                        input(type='text' ng-model='message' placeholder='Press [Enter] to send..' autofocus=true).form-control
+                        input(type="submit" class="btn btn-block btn-default" value="SEND")
