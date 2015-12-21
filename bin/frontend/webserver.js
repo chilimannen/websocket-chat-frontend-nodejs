@@ -10,9 +10,9 @@ var params = require('./../params');
 
 var port = normalizePort(params.webserver.port);
 app.set('port', port);
-
 var server = http.createServer(app);
 
+console.log("Frontend running on port " + params.webserver.port);
 server.listen(port);
 server.on('error', onError);
 

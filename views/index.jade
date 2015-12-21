@@ -2,9 +2,14 @@ extends layout
 
 block content
     div(ng-app='messageApp', ng-controller='messaging').container
-        .text-center
-            h1= '{{room.version}}'
-            p {{room.topic}}
+        .row
+            .pull-left
+                p.small version 1.0.0.A
+            .pull-right
+                p.small Robin Duda
+            .text-center
+                h1= '{{room.version}}'
+                p {{room.topic}}
 
         .col-xs-12.col-lg-8.col-lg-offset-2
             .well.well-sm

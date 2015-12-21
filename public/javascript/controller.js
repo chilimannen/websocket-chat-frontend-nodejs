@@ -59,7 +59,7 @@ angular.module('messageApp', [])
             if ($scope.room.connected) {
                 $scope.send(new Protocol.Message($scope.message));
             } else {
-                $scope.write("Not connected. Type /man for the manpage.");
+                $scope.write("Not connected. Type /help for manual.");
             }
         };
 
@@ -90,14 +90,6 @@ angular.module('messageApp', [])
                 console.log("no handler for " + message.header.action);
 
             $scope.$apply();
-        };
-
-        $scope.commandHandler["/connect"] = function (param) {
-            if ($scope.room.socket != null)
-                $scope.room.socket.close();
-
-            $scope.room.host = param.first;
-            $scope.connect();
         };
 
         $scope.connect = function (ip, port, room, server) {
@@ -159,17 +151,13 @@ angular.module('messageApp', [])
             $scope.send(new Protocol.ServerList());
         };
 
-        $scope.commandHandler["/man"] = function () {
+        $scope.commandHandler["/help"] = function () {
             $scope.printHelp();
         };
 
         $scope.commandHandler["/logout"] = function () {
             $scope.closeconnection();
             $scope.lookup($scope.publicRoom);
-        };
-
-        $scope.commandHandler["/help"] = function () {
-            $scope.send(new Protocol.Help());
         };
 
         $scope.printHelp = function () {
@@ -249,9 +237,9 @@ angular.module('messageApp', [])
                                 $scope.write("Server " + result.name + " selected, " + result.ip + ":" + result.port + ".");
                                 $scope.connect(result.ip, result.port, room, result.name);
                             }
-                            $scope.$apply();
                         }
                         $scope.registry.close();
+                        $scope.$apply();
                     },
                     onerror: function () {
                         $scope.write("Registry unavailable, try reloading.");

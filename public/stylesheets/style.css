@@ -8,6 +8,11 @@
 !important;
 }
 
+h1 {
+    text-shadow: 2px 2px 6px teal;
+    color: black;
+}
+
 #messagebox {
     display: block;
     max-height: inherit;
