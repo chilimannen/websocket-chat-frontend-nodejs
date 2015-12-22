@@ -48,16 +48,25 @@ Protocol = {
         this.topic = topic;
     },
 
-    Authenticate: function (username, password, actor) {
+    Authenticate: function (username, password) {
         this.header = {
-            action: 'authenticate',
-            actor: actor
+            action: 'authenticate'
         };
 
         this.username = username;
         this.password = password;
         this.created = undefined;
         this.authenticated = undefined;
+    },
+
+    Token: function (token) {
+        this.header = {
+            action: 'token'
+        };
+
+        this.username = token.username;
+        this.key = token.key;
+        this.expiry = token.expiry;
     },
 
     History: function (room, actor) {

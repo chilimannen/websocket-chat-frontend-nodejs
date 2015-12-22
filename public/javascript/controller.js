@@ -13,6 +13,7 @@ angular.module('messageApp', [])
         $scope.loadingroom = null;
         $scope.servername = null;
         $scope.publicRoom = "Public room";
+        $scope.token = null;
         $scope.room = {
             messages: [],
             name: 'Registry',
@@ -111,6 +112,18 @@ angular.module('messageApp', [])
 
         $scope.onOpen = function () {
             $scope.room.connected = true;
+
+            console.log($scope.token);
+            console.log(new Date().getTime());
+
+            if ($scope.token != null && $scope.token.expiry > new Date().getTime() / 1000) {
+                $scope.write("Attempting to authenticate with token.. ");
+                $scope.send(new Protocol.Token($scope.token));
+            } else if ($scope.token != null) {
+                $scope.write("Token has expired, authentication required.");
+            }
+
+
             $scope.$apply();
         };
 
@@ -186,8 +199,23 @@ angular.module('messageApp', [])
                 $scope.write(message.content, message.sender)
         };
 
+        $scope.messageHandler["token"] = function (message) {
+            if (message.accepted) {
+                $scope.write("Authenticated by token.");
+                $scope.send(new Protocol.Join($scope.loadingroom));
+            } else {
+                $scope.write("Failed to authenticate with token.");
+                $scope.write("/authenticate <username> <password>");
+            }
+        };
+
         $scope.messageHandler["authenticate"] = function (message) {
             if (message.authenticated) {
+
+                $scope.token = {};
+                $scope.token.key = message.token;
+                $scope.token.expiry = message.expiry;
+                $scope.token.username = message.username;
 
                 if (message.created)
                     $scope.write("Created account '" + message.username + "'.");
