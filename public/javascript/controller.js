@@ -170,14 +170,15 @@ angular.module('messageApp', [])
 
         $scope.commandHandler["/logout"] = function () {
             $scope.closeconnection();
+            $scope.token = null;
             $scope.lookup($scope.publicRoom);
         };
 
         $scope.printHelp = function () {
-            $scope.write("/join <string>, /disconnect, /logout");
-
             if ($scope.room.connected) {
                 $scope.send(new Protocol.Help());
+            } else {
+                $scope.write("/join <string>, /disconnect, /logout");
             }
         };
 
@@ -186,11 +187,15 @@ angular.module('messageApp', [])
         };
 
         $scope.messageHandler["join"] = function (message) {
-            $scope.room.name = message.room;
-            $scope.room.topic = message.topic;
-            $scope.room.version = message.version;
-            $scope.write(message.content);
-        };
+            if (message.errorInsideAlready) {
+                $scope.write("Already inside room, use /logout.");
+            } else {
+                $scope.room.name = message.room;
+                $scope.room.topic = message.topic;
+                $scope.room.version = message.version;
+                $scope.write(message.content);
+            }
+        }
 
         $scope.messageHandler["message"] = function (message) {
             if (message.command)
@@ -206,6 +211,21 @@ angular.module('messageApp', [])
             } else {
                 $scope.write("Failed to authenticate with token.");
                 $scope.write("/authenticate <username> <password>");
+            }
+        };
+
+        $scope.messageHandler["server.list"] = function (message) {
+            for (var i = 0; i < message.list.length; i++) {
+                var server = message.list[i];
+                $scope.command(server.ip + ":" + server.port + " - '" + server.name + "' "
+                    + (server.full ? 'FULL' : 'AVAILABLE') + '.');
+            }
+        };
+
+        $scope.messageHandler["help"] = function (message) {
+            for (var i = 0; i < message.list.length; i++) {
+                var command = message.list[i];
+                $scope.command(command.name + "\t" + command.parameters);
             }
         };
 
