@@ -195,7 +195,7 @@ angular.module('messageApp', [])
                 $scope.room.version = message.version;
                 $scope.write(message.content);
             }
-        }
+        };
 
         $scope.messageHandler["message"] = function (message) {
             if (message.command)
