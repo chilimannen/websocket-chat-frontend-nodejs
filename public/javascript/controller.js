@@ -113,17 +113,14 @@ angular.module('messageApp', [])
         $scope.onOpen = function () {
             $scope.room.connected = true;
 
-            console.log($scope.token);
-            console.log(new Date().getTime());
-
             if ($scope.token != null && $scope.token.expiry > new Date().getTime() / 1000) {
                 $scope.write("Attempting to authenticate with token.. ");
                 $scope.send(new Protocol.Token($scope.token));
             } else if ($scope.token != null) {
                 $scope.write("Token has expired, authentication required.");
+            } else {
+                $scope.write("Connected to server.");
             }
-
-
             $scope.$apply();
         };
 
@@ -186,14 +183,36 @@ angular.module('messageApp', [])
             $scope.write("Error: no such command.");
         };
 
-        $scope.messageHandler["join"] = function (message) {
+        $scope.messageHandler["user.event"] = function (message) {
+            $scope.write(message.username + " has " + ((message.join) ? 'joined' : 'left') + ' the room.');
+        };
+
+        $scope.messageHandler["topic"] = function (message) {
+            if (message.rejected) {
+                $scope.command("Not authorized to set topic.");
+            } else {
+                $scope.room.topic = message.topic;
+                $scope.command("Room topic changed to '" + message.topic + "'.");
+            }
+        };
+
+        $scope.messageHandler["room"] = function (message) {
             if (message.errorInsideAlready) {
                 $scope.write("Already inside room, use /logout.");
             } else {
                 $scope.room.name = message.room;
                 $scope.room.topic = message.topic;
                 $scope.room.version = message.version;
-                $scope.write(message.content);
+
+                if (message.system) {
+                    $scope.command('Authentication Required.');
+                    $scope.write('/authenticate <user> <pass>');
+                }
+                else
+                    $scope.write(((message.created) ? "Created " : "Joined ") + "room '" + message.room + "'.");
+
+                for (var i = 0; i < message.history.length; i++)
+                    $scope.write(message.history[i].content, message.history[i].sender);
             }
         };
 
@@ -263,7 +282,7 @@ angular.module('messageApp', [])
 
             if ("WebSocket" in window) {
                 $scope.room.messages = [];
-                $scope.write("Looking up " + room + "..");
+                $scope.write("Looking up '" + room + "' ..");
 
                 $scope.registry = new SocketProvider("ws://localhost:6090", {
                     onopen: function () {
